@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { userRouter } from "./routes/userRoutes";
 
 const PORT = 8000;
 
@@ -8,9 +9,7 @@ const app = express();
 app.use(express.json());
 
 // ROUTES
-app.get("/", (req: Request, res: Response) => {
-  res.send("testing router is running fine!");
-});
+app.use("/api/v1/user", userRouter);
 
 app.listen(PORT, () => {
   console.log(`server is running on ${PORT}`);
