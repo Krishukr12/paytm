@@ -1,8 +1,8 @@
-import express, { Request, Response } from "express";
 import { userRouter } from "./routes/userRoutes";
 
-const PORT = 8000;
+import express from "express";
 
+const PORT = 8000;
 const app = express();
 
 // MIDDLEWARE

@@ -1,3 +1,4 @@
+import { userSchema } from "@repo/zod-schemas/user";
 import { NextFunction, Request, Response } from "express";
 
 export const userSignIn = (req: Request, res: Response, next: NextFunction) => {
@@ -10,6 +11,7 @@ export const userSignUp = async (
   next: NextFunction
 ) => {
   const { email, password } = req.body;
+  userSchema.safeParse(req.body);
 
   try {
     // check user is already exist
