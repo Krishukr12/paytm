@@ -4,10 +4,11 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -b",
-    "dev": "tsc -b && node dist/index.js"
+    "dev": "tsc -b && node dist/app.js"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "@repo/zod-schemas": "workspace:*"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,8 @@
   "description": "",
   "dependencies": {
     "@types/express": "^5.0.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "typescript": "^5.7.3",
+    "zod": "^3.24.1"
   }
 }

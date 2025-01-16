@@ -26,20 +26,19 @@ importers:
       express:
         specifier: ^4.21.2
         version: 4.21.2
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
-
-  apps/server:
-    dependencies:
-      express:
-        specifier: ^4.21.2
-        version: 4.21.2
-    devDependencies:
-      '@repo/typescript-config':
+      '@repo/zod-schemas':
         specifier: workspace:*
-        version: link:../../packages/typescript-config
+        version: link:../../packages/zod-schemas
 
   apps/web:
     dependencies:
@@ -143,6 +142,15 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+
+  packages/zod-schemas:
+    dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
 
 packages:
 
@@ -2165,6 +2173,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@5.7.3:
+    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   uglify-js@3.19.3:
     resolution: {integrity: sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ==}
     engines: {node: '>=0.8.0'}
@@ -2258,6 +2271,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
 snapshots:
 
@@ -4589,6 +4605,8 @@ snapshots:
 
   typescript@5.5.4: {}
 
+  typescript@5.7.3: {}
+
   uglify-js@3.19.3:
     optional: true
 
@@ -4691,3 +4709,5 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.24.1: {}
