@@ -11,14 +11,13 @@ export const userSignUp = async (
   next: NextFunction
 ) => {
   const { email, password } = req.body;
-  userSchema.safeParse(req.body);
 
   try {
     // check user is already exist
     //create an user and save email and pass
     //and return message with successful
     // const isUserExist = await UserModel.find({ email });
-    const isUserExist = true;
+    const isUserExist = false;
     if (isUserExist) {
       res.status(400).send({
         success: false,
