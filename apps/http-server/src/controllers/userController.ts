@@ -1,37 +1,96 @@
-import { userSchema } from "@repo/zod-schemas/user";
-import { NextFunction, Request, Response } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-export const userSignIn = (req: Request, res: Response, next: NextFunction) => {
-  res.send("create user ");
-};
+import { Request, Response } from "express";
+import { client } from "@repo/db/client";
 
-export const userSignUp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email, password } = req.body;
-
+export const userSignUp = async (req: Request, res: Response) => {
   try {
-    // check user is already exist
-    //create an user and save email and pass
-    //and return message with successful
-    // const isUserExist = await UserModel.find({ email });
-    const isUserExist = false;
+    const { email, phoneNumber, password, name } = req.body;
+
+    const isUserExist = await client.user.findUnique({
+      where: { email },
+    });
+
     if (isUserExist) {
-      res.status(400).send({
+      res.status(400).json({
         success: false,
-        message: "user already exist",
+        message: "User already exists",
       });
       return;
     }
-    // const newUser = await new UserModel.create({ email, password });
-    // await new UserModel.create({ email, password });
-    res.status(200).send({
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await client.user.create({
+      data: {
+        email,
+        phoneNumber,
+        password: hashedPassword,
+        name,
+        AccountDetails: {
+          create: {
+            accountBalance: 0,
+          },
+        },
+      },
+    });
+
+    res.status(201).json({
       success: true,
-      message: "logged in successfully",
+      message: "User created successfully",
+      user: { email: newUser.email, name: newUser.name },
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const userSignIn = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await client.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+      return;
+    }
+
+    const token = jwt.sign(
+      { userId: user.userId, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Signed in successfully",
+      token,
+    });
+  } catch (error) {
+    console.error("Error in userSignIn:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };

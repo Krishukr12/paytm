@@ -5,6 +5,6 @@ import { validateDataWithZod } from "../utils/validateWithZod";
 
 export const userRouter: Router = Router();
 
-userRouter.post("/signin", validateDataWithZod(userSchema), userSignIn);
-
 userRouter.post("/signup", validateDataWithZod(userSchema), userSignUp);
+
+userRouter.post("/signin", validateDataWithZod(userSchema), userSignIn);
