@@ -15,7 +15,7 @@ export const userSignUp = async (req: Request, res: Response) => {
     if (isUserExist) {
       res.status(400).json({
         success: false,
-        message: "User already exists",
+        message: "user already exist",
       });
       return;
     }
@@ -38,14 +38,14 @@ export const userSignUp = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "user created successfully",
       user: { email: newUser.email, name: newUser.name },
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: "internal server error",
     });
   }
 };
@@ -61,7 +61,7 @@ export const userSignIn = async (req: Request, res: Response) => {
     if (!user) {
       res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "user not found",
       });
       return;
     }
@@ -71,7 +71,7 @@ export const userSignIn = async (req: Request, res: Response) => {
     if (!isPasswordValid) {
       res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "invalid email or password",
       });
       return;
     }
@@ -84,7 +84,7 @@ export const userSignIn = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Signed in successfully",
+      message: "signed in successfully",
       token,
     });
   } catch (error) {
