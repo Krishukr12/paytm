@@ -21,7 +21,9 @@ export const validateDataWithZod = (schema: ZodSchema) => {
     });
     res.send({
       success: false,
-      error: errors,
+      error: errors.map((error) => {
+        return error.split(":")[2]?.trim();
+      }),
     });
   };
 };
