@@ -10,7 +10,7 @@ datasource db {
 model User {
   userId             Int                  @id @default(autoincrement())
   email              String               @unique
-  phoneNumber        Int                  @unique
+  phoneNumber        BigInt               @unique
   password           String
   name               String
   AccountDetails     AccountDetails?
