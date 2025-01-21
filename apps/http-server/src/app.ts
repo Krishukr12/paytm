@@ -1,8 +1,8 @@
 import express from "express";
+import cors from "cors";
 
 import { userRouter } from "./routes/v1/userRoutes";
 import { globalErrorHandler } from "./utils/errorHandler";
-import cors from "cors";
 
 const PORT = 8000;
 const app = express();

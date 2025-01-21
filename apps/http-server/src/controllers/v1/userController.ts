@@ -1,23 +1,25 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { client } from "@repo/db/client";
+import { createError } from "../../utils/createError";
+import { StatusCodes } from "http-status-codes";
 
-export const userSignUp = async (req: Request, res: Response) => {
+export const userSignUp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email, phoneNumber, password, name } = req.body;
-
     const isUserExist = await client.user.findUnique({
       where: { email },
     });
-
     if (isUserExist) {
-      res.status(400).json({
-        success: false,
-        message: "user already exist",
-      });
-      return;
+      next(
+        createError(StatusCodes.INTERNAL_SERVER_ERROR, "user already exist")
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,21 +38,23 @@ export const userSignUp = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       success: true,
       message: "user created successfully",
       user: { email: newUser.email, name: newUser.name },
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "internal server error",
-    });
+    next(
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+    );
   }
 };
 
-export const userSignIn = async (req: Request, res: Response) => {
+export const userSignIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
 
   try {
@@ -59,21 +63,14 @@ export const userSignIn = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      res.status(404).json({
-        success: false,
-        message: "user not found",
-      });
+      next(createError(StatusCodes.NOT_FOUND, "user not found"));
       return;
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      res.status(401).json({
-        success: false,
-        message: "invalid email or password",
-      });
-      return;
+      next(createError(StatusCodes.UNAUTHORIZED, "invalid email or password"));
     }
 
     const token = jwt.sign(
@@ -82,16 +79,14 @@ export const userSignIn = async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       message: "signed in successfully",
       token,
     });
   } catch (error) {
-    console.error("Error in userSignIn:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+    next(
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+    );
   }
 };
