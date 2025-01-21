@@ -18,5 +18,5 @@ app.use("/api/v1/user", userRouter);
 app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
-  console.log(`server is running on ${PORT}`);
+  console.log(`server is running on localhost:${PORT}`);
 });

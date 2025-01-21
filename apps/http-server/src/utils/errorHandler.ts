@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 export interface IError extends Error {
   status: number;
@@ -8,9 +8,9 @@ export interface IError extends Error {
 export const globalErrorHandler = (
   error: IError,
   _req: Request,
-  res: Response
+  res: Response,
+  _next: NextFunction
 ) => {
-  console.log("reaching global error handler");
   const errorStatus = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
   const errorMessage = error.message || "something went wrong";
   res.status(errorStatus).send({

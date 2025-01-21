@@ -6,6 +6,8 @@ import { client } from "@repo/db/client";
 import { createError } from "../../utils/createError";
 import { StatusCodes } from "http-status-codes";
 
+const JWT_SECRET = process.env.JWT_SECRET ?? "kjsdfkjsdfkjsdfkjsdfkjsdf";
+
 export const userSignUp = async (
   req: Request,
   res: Response,
@@ -75,10 +77,9 @@ export const userSignIn = async (
 
     const token = jwt.sign(
       { userId: user.userId, email: user.email },
-      process.env.JWT_SECRET!,
+      JWT_SECRET,
       { expiresIn: "1h" }
     );
-
     res.status(StatusCodes.OK).json({
       success: true,
       message: "signed in successfully",
