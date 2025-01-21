@@ -21,4 +21,4 @@ export const userSchema = z.object({
     .regex(/^(?:\+91[-\s]?)?[6-9]\d{9}$/, "invalid indian phone number"),
 });
 
-// export type USER = z.infer<typeof userSchema>;
+export const UserLoginSchema = userSchema.pick({ email: true, password: true });
