@@ -145,12 +145,6 @@ importers:
 
   packages/typescript-config: {}
 
-  packages/ui:
-    dependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-
   packages/zod-schemas:
     dependencies:
       '@repo/typescript-config':
