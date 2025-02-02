@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ReactElement } from "react";
-const LandingPage = (): ReactElement => {
+
+const LandingPage = (): React.ReactNode => {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
