@@ -1,196 +1,130 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { userSchema } from "@repo/zod-schemas/user";
 import Link from "next/link";
+import { FiLogIn, FiArrowRight } from "react-icons/fi";
 
-export const AuthForm = () => {
-  const [isSignIn, setIsSignIn] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+const SignInForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<typeof userSchema>();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSignIn) {
-      console.log("Signing in with:", { email, password });
-    } else {
-      console.log("Signing up with:", { name, email, password });
-    }
+  const onSubmit = (data: typeof userSchema) => {
+    console.log("Signing in with:", {
+      email: data.email,
+      password: data.password,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
-        <div className="flex justify-between items-center mb-8">
-          <Link
-            href="/"
-            className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Back to Home
-          </Link>
-          <span className="text-3xl font-bold text-blue-600">Paytm</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 transition-all duration-300 hover:shadow-2xl">
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex justify-center">
+            <span className="text-3xl font-bold text-blue-600 flex items-center gap-2">
+              <FiLogIn className="w-8 h-8" />
+              Paytm
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-gray-500">Sign in to continue your journey</p>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          {isSignIn ? "Sign In to Paytm" : "Create New Account"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!isSignIn && (
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-blue-500 focus:ring-blue-500 p-3 border"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          )}
-
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address
             </label>
             <input
-              placeholder="Email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
               type="email"
-              id="email"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                focus:border-blue-500 focus:ring-blue-500 p-3 border"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="john@example.com"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
             />
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-500">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                placeholder="Password"
-                type={showPassword ? "text" : "password"}
-                id="password"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-blue-500 focus:ring-blue-500 p-3 border"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
-                {showPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                )}
-              </button>
+                Forgot Password?
+              </Link>
             </div>
+            <input
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              type="password"
+              placeholder="••••••••••••••••"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+            />
+            {errors.password && (
+              <p className="mt-2 text-sm text-red-500">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md 
-              hover:bg-blue-700 transition-colors font-medium"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-lg font-medium transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 shadow-sm"
           >
-            {isSignIn ? "Sign In" : "Sign Up"}
+            Sign In
+            <FiArrowRight className="w-5 h-5" />
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {isSignIn ? "Don't have an account? " : "Already have an account? "}
-            <button
-              onClick={() => setIsSignIn(!isSignIn)}
-              className="text-blue-600 font-medium hover:text-blue-500"
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>
+            Don't have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              {isSignIn ? "Sign Up" : "Sign In"}
-            </button>
+              Create Account
+            </Link>
           </p>
         </div>
 
-        {isSignIn && (
-          <div className="mt-4 text-center">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-500"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-        )}
-
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>
-            By continuing, you agree to Paytm&apos;s <br />
-            <a href="#" className="text-blue-600 hover:text-blue-500">
-              Terms of Service
+            By continuing, you agree to our{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Terms
             </a>{" "}
             and{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
               Privacy Policy
             </a>
           </p>
@@ -200,4 +134,4 @@ export const AuthForm = () => {
   );
 };
 
-export default AuthForm;
+export default SignInForm;

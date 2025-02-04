@@ -15,13 +15,21 @@ export const userSignUp = async (
 ) => {
   try {
     const { email, phoneNumber, password, name } = req.body;
-    const isUserExist = await client.user.findUnique({
-      where: { email },
+
+    const existingUser = await client.user.findFirst({
+      where: {
+        OR: [{ email }, { phoneNumber }],
+      },
     });
-    if (isUserExist) {
-      next(
-        createError(StatusCodes.INTERNAL_SERVER_ERROR, "user already exist")
-      );
+
+    const errors: string[] = [];
+
+    if (existingUser) {
+      if (existingUser.email === email) errors.push("Email already exists");
+      if (existingUser.phoneNumber === phoneNumber)
+        errors.push("Phone number already exists");
+
+      return next(createError(StatusCodes.CONFLICT, errors.join(", ")));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
