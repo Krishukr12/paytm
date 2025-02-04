@@ -3,13 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-
-// Add interface for form data
-interface FormData {
-  name?: string;
-  email: string;
-  password: string;
-}
+import { userSchema } from "@repo/zod-schemas/user";
 
 const AuthForm = (): React.ReactNode => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -18,9 +12,9 @@ const AuthForm = (): React.ReactNode => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<typeof userSchema>();
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: UserSchema) => {
     if (isSignIn) {
       console.log("Signing in with:", {
         email: data.email,
@@ -55,6 +49,7 @@ const AuthForm = (): React.ReactNode => {
                 {...register("name", { required: "Full name is required" })}
                 type="text"
                 id="name"
+                placeholder="Full Name"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
                   focus:border-blue-500 focus:ring-blue-500 p-3 border"
               />
