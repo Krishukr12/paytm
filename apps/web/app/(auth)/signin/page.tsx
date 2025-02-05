@@ -1,22 +1,46 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { userSchema } from "@repo/zod-schemas/user";
 import Link from "next/link";
 import { FiLogIn, FiArrowRight } from "react-icons/fi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userLoginSchema } from "@repo/zod-schemas/user";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import axios, { AxiosError } from "axios";
+import { BACKEND_URL } from "@/const/Url";
+import { useState } from "react";
+
+interface UserLoginSchema {
+  email: string;
+  password: string;
+}
 
 const SignInForm = () => {
+  const [responseError, setResponseError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<typeof userSchema>();
+    formState: { errors, isSubmitting },
+  } = useForm<UserLoginSchema>({
+    resolver: zodResolver(userLoginSchema),
+    mode: "onBlur",
+  });
 
-  const onSubmit = (data: typeof userSchema) => {
-    console.log("Signing in with:", {
-      email: data.email,
-      password: data.password,
-    });
+  const onSubmit = async (loginData: UserLoginSchema) => {
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/v1/user/signin`,
+        loginData
+      );
+      console.log(response);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.data.message) {
+          setResponseError(error.response?.data.message);
+        }
+      }
+    }
   };
 
   return (
@@ -32,7 +56,11 @@ const SignInForm = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>
-          <p className="text-gray-500">Sign in to continue your journey</p>
+          {responseError ? (
+            <ErrorMessage message={responseError} />
+          ) : (
+            <p className="text-gray-500">Sign in to continue your journey</p>
+          )}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -41,21 +69,14 @@ const SignInForm = () => {
               Email Address
             </label>
             <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-              })}
+              {...register("email", {})}
               type="email"
               placeholder="john@example.com"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
             />
+
             {errors.email && (
-              <p className="mt-2 text-sm text-red-500">
-                {errors.email.message}
-              </p>
+              <ErrorMessage message={errors.email.message ?? ""} />
             )}
           </div>
 
@@ -72,36 +93,29 @@ const SignInForm = () => {
               </Link>
             </div>
             <input
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
+              {...register("password")}
               type="password"
               placeholder="••••••••••••••••"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
             />
             {errors.password && (
-              <p className="mt-2 text-sm text-red-500">
-                {errors.password.message}
-              </p>
+              <ErrorMessage message={errors.password.message ?? " "} />
             )}
           </div>
 
           <button
+            disabled={isSubmitting}
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-lg font-medium transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 shadow-sm"
+            className=" disabled:opacity-50 w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-lg font-medium transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 shadow-sm"
           >
-            Sign In
+            {isSubmitting ? "Loading..." : "Sign In"}
             <FiArrowRight className="w-5 h-5" />
           </button>
         </form>
 
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/signup"
               className="text-blue-600 hover:text-blue-800 font-medium"

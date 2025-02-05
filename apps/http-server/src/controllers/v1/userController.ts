@@ -81,6 +81,7 @@ export const userSignIn = async (
 
     if (!isPasswordValid) {
       next(createError(StatusCodes.UNAUTHORIZED, "invalid email or password"));
+      return;
     }
 
     const token = jwt.sign(

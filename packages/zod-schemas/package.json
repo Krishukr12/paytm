@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "exports": {
-    "./user": "./src/userSchema.ts"
+    "./user": "./src/userSchema.ts",
+    "./userLoginResponse": "./src/userLoginResponse.ts",
+    "./userSignUpResponse": "./src/userSignUpResponse.ts"
   },
   "dependencies": {
     "zod": "^3.24.1",
