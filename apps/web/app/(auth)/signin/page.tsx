@@ -1,149 +1,154 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 
-export const AuthForm = () => {
-  const [isSignIn, setIsSignIn] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FiLogIn, FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userLoginSchema } from "@repo/zod-schemas/user";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSignIn) {
-      console.log("Signing in with:", { email, password });
+interface UserLoginSchema {
+  email: string;
+  password: string;
+}
+
+const SignInForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UserLoginSchema>({
+    resolver: zodResolver(userLoginSchema),
+    mode: "onBlur",
+  });
+
+  const onSubmit = async (data: UserLoginSchema) => {
+    const response = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+
+    if (response?.ok) {
+      toast.success("Login successful");
+      router.push("/dashboard");
     } else {
-      console.log("Signing up with:", { name, email, password });
+      toast.error(response?.error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
-        <div className="flex justify-between items-center mb-8">
-          <Link
-            href="/"
-            className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Back to Home
-          </Link>
-          <span className="text-3xl font-bold text-blue-600">Paytm</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 transition-all duration-300 hover:shadow-2xl">
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex justify-center">
+            <span className="text-3xl font-bold text-blue-600 flex items-center gap-2">
+              <FiLogIn className="w-8 h-8" />
+              Paytm
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          {isSignIn ? "Sign In to Paytm" : "Create New Account"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!isSignIn && (
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-blue-500 focus:ring-blue-500 p-3 border"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          )}
-
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address
             </label>
             <input
+              {...register("email")}
               type="email"
-              id="email"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                focus:border-blue-500 focus:ring-blue-500 p-3 border"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="john@example.com"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
             />
+
+            {errors.email && (
+              <ErrorMessage message={errors.email.message ?? ""} />
+            )}
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                focus:border-blue-500 focus:ring-blue-500 p-3 border"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="relative">
+              <input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••••••••••"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <FiEyeOff className="w-5 h-5" />
+                ) : (
+                  <FiEye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            {errors.password && (
+              <ErrorMessage message={errors.password.message ?? " "} />
+            )}
           </div>
 
           <button
+            disabled={isSubmitting}
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md 
-              hover:bg-blue-700 transition-colors font-medium"
+            className=" disabled:opacity-50 w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-lg font-medium transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 shadow-sm"
           >
-            {isSignIn ? "Sign In" : "Sign Up"}
+            {isSubmitting ? "Loading..." : "Sign In"}
+            <FiArrowRight className="w-5 h-5" />
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {isSignIn ? "Don't have an account? " : "Already have an account? "}
-            <button
-              onClick={() => setIsSignIn(!isSignIn)}
-              className="text-blue-600 font-medium hover:text-blue-500"
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              {isSignIn ? "Sign Up" : "Sign In"}
-            </button>
+              Create Account
+            </Link>
           </p>
         </div>
 
-        {isSignIn && (
-          <div className="mt-4 text-center">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-500"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-        )}
-
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>
-            By continuing, you agree to Paytm&apos;s <br />
-            <a href="#" className="text-blue-600 hover:text-blue-500">
-              Terms of Service
+            By continuing, you agree to our{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Terms
             </a>{" "}
             and{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
               Privacy Policy
             </a>
           </p>
@@ -153,4 +158,4 @@ export const AuthForm = () => {
   );
 };
 
-export default AuthForm;
+export default SignInForm;

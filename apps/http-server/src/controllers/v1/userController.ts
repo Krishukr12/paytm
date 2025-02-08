@@ -15,13 +15,21 @@ export const userSignUp = async (
 ) => {
   try {
     const { email, phoneNumber, password, name } = req.body;
-    const isUserExist = await client.user.findUnique({
-      where: { email },
+
+    const existingUser = await client.user.findFirst({
+      where: {
+        OR: [{ email }, { phoneNumber }],
+      },
     });
-    if (isUserExist) {
-      next(
-        createError(StatusCodes.INTERNAL_SERVER_ERROR, "user already exist")
-      );
+
+    const errors: string[] = [];
+
+    if (existingUser) {
+      if (existingUser.email === email) errors.push("Email already exists");
+      if (existingUser.phoneNumber === phoneNumber)
+        errors.push("Phone number already exists");
+
+      return next(createError(StatusCodes.CONFLICT, errors.join(", ")));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -73,6 +81,7 @@ export const userSignIn = async (
 
     if (!isPasswordValid) {
       next(createError(StatusCodes.UNAUTHORIZED, "invalid email or password"));
+      return;
     }
 
     const token = jwt.sign(
@@ -84,6 +93,39 @@ export const userSignIn = async (
       success: true,
       message: "signed in successfully",
       token,
+    });
+  } catch (error) {
+    next(
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+    );
+  }
+};
+
+export const getUserDashboardData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //@ts-ignore
+    const { userId } = req.user;
+
+    const user = await client.user.findUnique({
+      where: { userId },
+      select: {
+        userId: true,
+        email: true,
+        name: true,
+        AccountDetails: true,
+        TransactionHistory: true,
+        password: false,
+      },
+    });
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "dashboard data fetched successfully",
+      data: user,
     });
   } catch (error) {
     next(
