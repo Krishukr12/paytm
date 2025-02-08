@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import axios, { AxiosError } from "axios";
@@ -11,6 +12,8 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { userSchema } from "@repo/zod-schemas/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BACKEND_URL } from "@/const/Url";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface UserSchema {
   name: string;
@@ -21,9 +24,10 @@ interface UserSchema {
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_CODES[0]);
+  const [selectedCountry] = useState(COUNTRY_CODES[0]);
   const [isOpen, setIsOpen] = useState(false);
-  const [responseError, setResponseError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const {
     register,
@@ -36,17 +40,21 @@ const SignUpForm = () => {
 
   const onSubmit: SubmitHandler<UserSchema> = async (data) => {
     try {
+      toast.info("Creating account...");
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/user/signup`,
         data
       );
-      console.log("response", response);
+      toast.success(response.data.message);
+      router.push("/signin");
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.data.message) {
-          setResponseError(error.response.data.message);
+          toast.error(error.response.data.message);
         }
       }
+    } finally {
+      toast.dismiss();
     }
   };
 
@@ -66,13 +74,6 @@ const SignUpForm = () => {
               Sign In
             </Link>
           </p>
-          {responseError?.split(",").map((errorMessage, index) => {
-            return (
-              <p key={index} className="text-red-500 text-sm mt-2">
-                {errorMessage}
-              </p>
-            );
-          })}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -127,33 +128,6 @@ const SignUpForm = () => {
                   <span className="text-gray-600">{selectedCountry.code}</span>
                   <FiChevronDown className="ml-auto text-gray-400" />
                 </button>
-
-                {isOpen && (
-                  <div className="absolute z-10 mt-2 w-full max-h-60 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                    <div className="overflow-y-auto">
-                      {COUNTRY_CODES.map((country) => (
-                        <button
-                          key={country.code}
-                          type="button"
-                          onClick={() => {
-                            setSelectedCountry(country);
-                            setIsOpen(false);
-                          }}
-                          className="w-full px-4 py-2 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                        >
-                          <Image
-                            src={`https://flagcdn.com/24x18/${country.country.toLowerCase()}.png`}
-                            alt={country.name}
-                            width={24}
-                            height={18}
-                            className="w-6 h-4 object-cover rounded-sm"
-                          />
-                          <span className="text-gray-600">{country.code}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
               <input
                 {...register("phoneNumber")}

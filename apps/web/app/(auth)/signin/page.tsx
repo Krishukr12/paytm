@@ -1,14 +1,16 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { FiLogIn, FiArrowRight } from "react-icons/fi";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FiLogIn, FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema } from "@repo/zod-schemas/user";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import axios, { AxiosError } from "axios";
-import { BACKEND_URL } from "@/const/Url";
-import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface UserLoginSchema {
   email: string;
@@ -16,7 +18,8 @@ interface UserLoginSchema {
 }
 
 const SignInForm = () => {
-  const [responseError, setResponseError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -27,19 +30,18 @@ const SignInForm = () => {
     mode: "onBlur",
   });
 
-  const onSubmit = async (loginData: UserLoginSchema) => {
-    try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/v1/user/signin`,
-        loginData
-      );
-      console.log(response);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response?.data.message) {
-          setResponseError(error.response?.data.message);
-        }
-      }
+  const onSubmit = async (data: UserLoginSchema) => {
+    const response = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+
+    if (response?.ok) {
+      toast.success("Login successful");
+      router.push("/dashboard");
+    } else {
+      toast.error(response?.error);
     }
   };
 
@@ -56,11 +58,6 @@ const SignInForm = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>
-          {responseError ? (
-            <ErrorMessage message={responseError} />
-          ) : (
-            <p className="text-gray-500">Sign in to continue your journey</p>
-          )}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -69,7 +66,7 @@ const SignInForm = () => {
               Email Address
             </label>
             <input
-              {...register("email", {})}
+              {...register("email")}
               type="email"
               placeholder="john@example.com"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
@@ -92,12 +89,25 @@ const SignInForm = () => {
                 Forgot Password?
               </Link>
             </div>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="••••••••••••••••"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-            />
+            <div className="relative">
+              <input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••••••••••"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <FiEyeOff className="w-5 h-5" />
+                ) : (
+                  <FiEye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <ErrorMessage message={errors.password.message ?? " "} />
             )}

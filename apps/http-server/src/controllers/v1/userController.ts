@@ -100,3 +100,36 @@ export const userSignIn = async (
     );
   }
 };
+
+export const getUserDashboardData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //@ts-ignore
+    const { userId } = req.user;
+
+    const user = await client.user.findUnique({
+      where: { userId },
+      select: {
+        userId: true,
+        email: true,
+        name: true,
+        AccountDetails: true,
+        TransactionHistory: true,
+        password: false,
+      },
+    });
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "dashboard data fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+    );
+  }
+};

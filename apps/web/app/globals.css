@@ -54,11 +54,12 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%}
 }
-@layer base {
-  * {
-    @apply border-border;
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
 }
