@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 
 export const isUserAuthorized = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {

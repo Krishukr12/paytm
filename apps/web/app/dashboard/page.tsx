@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import Modal from "@/components/Modal";
+import SendMoney from "@/components/SendMoney";
+import ComingSoon from "@/components/ComingSoon";
 
+import { useState, useEffect } from "react";
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -55,22 +58,36 @@ interface TransactionHistory {
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState<User | null>(null);
+  const [isComingSoonModalOpen, setIsComingSoonModalOpen] =
+    useState<boolean>(false);
+  const [isSendMoneyModalOpen, setIsSendMoneyModalOpen] =
+    useState<boolean>(false);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axiosAuth.get("/api/v1/user/dashboard");
+      if (response?.data?.success) {
+        toast.success(response?.data?.message);
+        setDashboardData(response?.data?.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error?.response?.data?.message);
+      }
+    }
+  };
+
+  const handleAfterSendMoneySuccess = () => {
+    fetchDashboardData();
+    closeAllModal();
+  };
+
+  const closeAllModal = () => {
+    setIsComingSoonModalOpen(false);
+    setIsSendMoneyModalOpen(false);
+  };
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axiosAuth.get("/api/v1/user/dashboard");
-        if (response?.data?.success) {
-          toast.success(response?.data?.message);
-          setDashboardData(response?.data?.data);
-        }
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          toast.error(error?.response?.data?.message);
-        }
-      }
-    };
-
     fetchDashboardData();
   }, []);
 
@@ -102,15 +119,57 @@ export default function Dashboard() {
   ];
 
   const quickActions = [
-    { name: "Add Money", icon: "➕", color: "bg-green-100" },
-    { name: "Send Money", icon: "💸", color: "bg-blue-100" },
-    { name: "Pay Bills", icon: "🧾", color: "bg-purple-100" },
-    { name: "Recharge", icon: "📱", color: "bg-yellow-100" },
+    {
+      name: "Add Money",
+      icon: "➕",
+      color: "bg-green-100",
+      onClick: () => {
+        setIsComingSoonModalOpen(true);
+      },
+    },
+    {
+      name: "Send Money",
+      icon: "💸",
+      color: "bg-blue-100",
+      onClick: () => {
+        setIsSendMoneyModalOpen(true);
+      },
+    },
+    {
+      name: "Pay Bills",
+      icon: "🧾",
+      color: "bg-purple-100",
+      onClick: () => setIsComingSoonModalOpen(true),
+    },
+    {
+      name: "Recharge",
+      icon: "📱",
+      color: "bg-yellow-100",
+      onClick: () => setIsComingSoonModalOpen(true),
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      {/* Header Section */}
+      <Modal
+        isOpen={isSendMoneyModalOpen}
+        onClose={() => {
+          setIsSendMoneyModalOpen(false);
+        }}
+      >
+        <SendMoney
+          closeAllModal={closeAllModal}
+          afterSendMoneySuccess={handleAfterSendMoneySuccess}
+        />
+      </Modal>
+      <Modal
+        isOpen={isComingSoonModalOpen}
+        onClose={() => {
+          setIsComingSoonModalOpen(false);
+        }}
+      >
+        <ComingSoon />
+      </Modal>
       <header className="mb-8 animate-fade-in">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <Link href="/">
@@ -136,7 +195,6 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Quick Actions Grid */}
       <section className="mb-8 animate-slide-up">
         <h3 className="text-lg font-semibold mb-4 text-gray-700">
           Quick Actions
@@ -144,6 +202,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action, index) => (
             <button
+              onClick={() => action.onClick()}
               key={index}
               className={`${action.color} p-6 rounded-xl hover:transform hover:scale-105 transition-all duration-300`}
             >
@@ -154,7 +213,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Recent Transactions */}
       <section className="animate-slide-up">
         <h3 className="text-lg font-semibold mb-4 text-gray-700">
           Recent Transactions
