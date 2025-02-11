@@ -12,6 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.send("welcome to the bank");
+});
+
 // ROUTES
 //User Routes
 app.use("/api/v1/user", userRouter);
