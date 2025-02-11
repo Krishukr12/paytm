@@ -1,7 +1,8 @@
-import { client, Status } from "@repo/db/client";
+import { client } from "@repo/db/client";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { createError } from "../utils";
+import { accountStatus } from "@repo/const/accountStatus";
 
 export const isReceiverUserExistAndActive = async (
   req: Request,
@@ -17,7 +18,7 @@ export const isReceiverUserExistAndActive = async (
         },
       },
     });
-    if (response?.status === Status.active) {
+    if (response?.status === accountStatus.active) {
       next();
       return;
     } else {
