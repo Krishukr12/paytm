@@ -18,7 +18,7 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
-  apps/http-server:
+  apps/http_server:
     dependencies:
       '@repo/const':
         specifier: workspace:*
