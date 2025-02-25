@@ -13,6 +13,7 @@ model User {
   phoneNumber        String               @unique
   password           String
   name               String
+  status             AccountStatus        @default(active)
   AccountDetails     AccountDetails?
   TransactionHistory TransactionHistory[]
 }
@@ -34,4 +35,10 @@ model TransactionHistory {
   senderAccount          AccountDetails @relation(fields: [senderAccountId], references: [accountNumber])
   User                   User?          @relation(fields: [userUserId], references: [userId])
   userUserId             Int?
+}
+
+enum AccountStatus {
+  active
+  inactive
+  blocked
 }

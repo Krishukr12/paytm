@@ -3,10 +3,10 @@ import {
   getUserDashboardData,
   userSignIn,
   userSignUp,
-} from "../../controllers/v1/userController";
+} from "../../controllers/v1/userController.js";
 import { userLoginSchema, userSchema } from "@repo/zod-schemas/user";
-import { validateDataWithZod } from "../../utils";
-import { isUserAuthorized } from "../../middleware/isUserAuthorized";
+import { isUserAuthorized } from "../../middleware/isUserAuthorized.js";
+import { validateDataWithZod } from "../../utils/validateWithZod.js";
 
 export const userRouter: Router = Router();
 

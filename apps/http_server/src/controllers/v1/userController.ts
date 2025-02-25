@@ -2,9 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { NextFunction, Request, Response } from "express";
-import { client } from "@repo/db/client";
-import { createError } from "../../utils/createError";
 import { StatusCodes } from "http-status-codes";
+import { createError } from "../../utils/createError.js";
+import { prismaClient } from "@repo/db/client";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "kjsdfkjsdfkjsdfkjsdfkjsdf";
 
@@ -16,7 +16,7 @@ export const userSignUp = async (
   try {
     const { email, phoneNumber, password, name } = req.body;
 
-    const existingUser = await client.user.findFirst({
+    const existingUser = await prismaClient.user.findFirst({
       where: {
         OR: [{ email }, { phoneNumber }],
       },
@@ -34,7 +34,7 @@ export const userSignUp = async (
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await client.user.create({
+    const newUser = await prismaClient.user.create({
       data: {
         email,
         phoneNumber,
@@ -68,7 +68,7 @@ export const userSignIn = async (
   const { email, password } = req.body;
 
   try {
-    const user = await client.user.findUnique({
+    const user = await prismaClient.user.findUnique({
       where: { email },
     });
 
@@ -110,7 +110,7 @@ export const getUserDashboardData = async (
     //@ts-ignore
     const { userId } = req.user;
 
-    const user = await client.user.findUnique({
+    const user = await prismaClient.user.findUnique({
       where: { userId },
       select: {
         userId: true,

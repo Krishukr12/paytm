@@ -1,8 +1,8 @@
-import { client } from "@repo/db/client";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { createError } from "../utils";
 import { accountStatus } from "@repo/const/accountStatus";
+import { createError } from "../utils/createError.js";
+import { prismaClient } from "@repo/db/client";
 
 export const isReceiverUserExistAndActive = async (
   req: Request,
@@ -11,7 +11,7 @@ export const isReceiverUserExistAndActive = async (
 ) => {
   try {
     const { receiverAccountNumber } = req.body;
-    const response = await client.user.findFirst({
+    const response = await prismaClient.user.findFirst({
       where: {
         AccountDetails: {
           accountNumber: receiverAccountNumber,

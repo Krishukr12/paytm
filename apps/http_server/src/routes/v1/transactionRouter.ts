@@ -3,10 +3,10 @@ import { Router } from "express";
 import {
   isReceiverUserHaveAccount,
   sendMoney,
-} from "../../controllers/v1/transactionController";
-import { validateDataWithZod } from "../../utils";
-import { isReceiverUserExistAndActive } from "../../middleware/isReceiverUserExist";
-import { isUserAuthorized } from "../../middleware/isUserAuthorized";
+} from "../../controllers/v1/transactionController.js";
+import { isReceiverUserExistAndActive } from "../../middleware/isReceiverUserExist.js";
+import { isUserAuthorized } from "../../middleware/isUserAuthorized.js";
+import { validateDataWithZod } from "../../utils/validateWithZod.js";
 
 export const transactionRouter: Router = Router();
 

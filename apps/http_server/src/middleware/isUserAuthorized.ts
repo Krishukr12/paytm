@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
 import { NextFunction, Request, Response } from "express";
-import { createError } from "../utils";
 import { StatusCodes } from "http-status-codes";
+import { createError } from "../utils/createError.js";
 
 export const isUserAuthorized = async (
   req: Request,

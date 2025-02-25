@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 
-import { userRouter } from "./routes/v1/userRoutes";
-import { globalErrorHandler } from "./utils/errorHandler";
-import { transactionRouter } from "./routes/v1/transactionRouter";
+import { userRouter } from "./routes/v1/userRoutes.js";
+import { globalErrorHandler } from "./utils/errorHandler.js";
+import { transactionRouter } from "./routes/v1/transactionRouter.js";
 
 const PORT = 8000;
 const app = express();
