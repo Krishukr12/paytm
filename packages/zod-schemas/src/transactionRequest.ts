@@ -7,8 +7,15 @@ export const transactionRequestSchema = z.object({
 });
 
 export const sendMoneyRequestSchema = z.object({
-  amount: z.string().min(1, "amount is required"),
-  receiverAccountNumber: z.string().min(1, "invalid account number"),
+  amount: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, "amount cannot be negative and zero")
+    .refine((val) => val >= 1, "amount is required"),
+  receiverAccountNumber: z
+    .string()
+    .length(10, "Invalid account number")
+    .regex(/^[0-9]+$/, "Account number must contain only digits"),
 });
 
 export const isReceiverUserHaveAccountRequestSchema =

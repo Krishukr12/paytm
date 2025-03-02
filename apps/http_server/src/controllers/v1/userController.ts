@@ -43,6 +43,7 @@ export const userSignUp = async (
         AccountDetails: {
           create: {
             accountBalance: 0,
+            accountNumber: phoneNumber,
           },
         },
       },
@@ -124,7 +125,7 @@ export const getUserDashboardData = async (
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "dashboard data fetched successfully",
+      message: "Account details fetched successfully",
       data: user,
     });
   } catch (error) {

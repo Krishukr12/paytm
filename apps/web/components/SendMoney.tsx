@@ -21,6 +21,7 @@ const SendMoney = ({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<SendMoneySchema>({
     resolver: zodResolver(sendMoneyRequestSchema),
@@ -28,7 +29,6 @@ const SendMoney = ({
   });
 
   const onSubmit = async (data: SendMoneySchema) => {
-    console.log("hitting api");
     try {
       const response = await axiosAuth.post("/api/v1/transaction/send-money", {
         amount: Number(data.amount),
@@ -47,6 +47,7 @@ const SendMoney = ({
       console.log(error);
     } finally {
       closeAllModal();
+      reset();
     }
   };
 

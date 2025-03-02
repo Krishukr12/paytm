@@ -19,7 +19,7 @@ model User {
 }
 
 model AccountDetails {
-  accountNumber      Int                  @id @default(autoincrement())
+  accountNumber      String               @id
   accountBalance     Int
   userId             Int                  @unique
   user               User                 @relation(fields: [userId], references: [userId])
@@ -29,9 +29,9 @@ model AccountDetails {
 model TransactionHistory {
   transactionId          Int            @id @default(autoincrement())
   amount                 Int
-  receivingAccountNumber Int
+  receivingAccountNumber BigInt
   date                   DateTime       @default(now())
-  senderAccountId        Int
+  senderAccountId        String
   senderAccount          AccountDetails @relation(fields: [senderAccountId], references: [accountNumber])
   User                   User?          @relation(fields: [userUserId], references: [userId])
   userUserId             Int?

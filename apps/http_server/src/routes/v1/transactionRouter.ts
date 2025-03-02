@@ -13,8 +13,8 @@ export const transactionRouter: Router = Router();
 transactionRouter.post(
   "/send-money",
   validateDataWithZod(isReceiverUserHaveAccountRequestSchema),
-  isReceiverUserExistAndActive,
   isUserAuthorized,
+  isReceiverUserExistAndActive,
   sendMoney
 );
 

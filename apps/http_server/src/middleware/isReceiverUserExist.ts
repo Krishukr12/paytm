@@ -6,26 +6,58 @@ import { prismaClient } from "@repo/db/client";
 
 export const isReceiverUserExistAndActive = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
     const { receiverAccountNumber } = req.body;
-    const response = await prismaClient.user.findFirst({
+    //@ts-ignore
+    const { userId } = req.user;
+
+    // Get sender's account details
+    const senderUser = await prismaClient.user.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        AccountDetails: true,
+      },
+    });
+
+    // Get receiver's details
+    const receiverUser = await prismaClient.user.findFirst({
       where: {
         AccountDetails: {
-          accountNumber: receiverAccountNumber,
+          accountNumber: `${receiverAccountNumber}`,
         },
       },
     });
-    if (response?.status === accountStatus.active) {
+
+    if (
+      Number(senderUser?.AccountDetails?.accountNumber) ===
+      receiverAccountNumber
+    ) {
+      next(
+        createError(
+          StatusCodes.BAD_REQUEST,
+          "You cannot transfer money to your own account"
+        )
+      );
+      return;
+    }
+
+    if (receiverUser?.status === accountStatus.active) {
       next();
       return;
     } else {
-      next(createError(StatusCodes.NOT_FOUND, "invalid user"));
+      next(
+        createError(
+          StatusCodes.NOT_FOUND,
+          "The recipient's bank details are incorrect or do not exist"
+        )
+      );
       return;
     }
-    console.log("reaching to end of user exist middleware");
   } catch (error) {
     next(
       createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")

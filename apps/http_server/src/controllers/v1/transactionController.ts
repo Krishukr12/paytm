@@ -28,6 +28,7 @@ export const sendMoney = async (
       next(createError(StatusCodes.BAD_REQUEST, "something went wrong"));
       return;
     }
+
     if (senderUser?.AccountDetails?.accountBalance < amount) {
       next(createError(StatusCodes.BAD_REQUEST, "insufficient balance"));
       return;
@@ -39,7 +40,7 @@ export const sendMoney = async (
         const receiverUser = await tx.user.findFirst({
           where: {
             AccountDetails: {
-              accountNumber: receiverAccountNumber,
+              accountNumber: `${receiverAccountNumber}`,
             },
           },
         });
