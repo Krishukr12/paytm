@@ -243,7 +243,7 @@ export default function Dashboard() {
             View All →
           </Link>
         </div>
-        {/* Transaction list */}
+
         <div className="bg-white rounded-xl md:rounded-2xl shadow-sm overflow-hidden">
           {transactionData &&
             transactionData.map((transaction) => (
@@ -264,7 +264,6 @@ export default function Dashboard() {
                     </div>
                     <div className="min-w-0">
                       <p className="font-medium truncate">
-                        {/* {transaction.description} */}
                         {transaction.activity === "received"
                           ? "Credited"
                           : "Debited"}
