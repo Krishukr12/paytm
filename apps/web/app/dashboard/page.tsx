@@ -11,7 +11,6 @@ import {
   CurrencyRupeeIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon,
   PencilSquareIcon,
 } from "@heroicons/react/20/solid";
 import { axiosAuth } from "@/lib/axios";
@@ -57,8 +56,21 @@ interface TransactionHistory {
   User?: User;
 }
 
+interface Transaction {
+  senderAccountId: string;
+  amount: number;
+  date: Date;
+  activity: "received" | "sent";
+  transactionId: number;
+}
+
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState<User | null>(null);
+  const [transactionData, setTransactionData] = useState<Transaction[] | null>(
+    null
+  );
+
+  console.log(transactionData);
   const [isComingSoonModalOpen, setIsComingSoonModalOpen] =
     useState<boolean>(false);
   const [isSendMoneyModalOpen, setIsSendMoneyModalOpen] =
@@ -78,8 +90,24 @@ export default function Dashboard() {
     }
   };
 
+  const getTransactionData = async () => {
+    try {
+      const response = await axiosAuth.get("/api/v1/transaction/transactions");
+      if (response?.data?.success) {
+        toast.success(response?.data?.message);
+        console.log("console", response?.data?.transaction);
+        setTransactionData(response?.data?.transaction);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error?.response?.data?.message);
+      }
+    }
+  };
+
   const handleAfterSendMoneySuccess = () => {
     fetchDashboardData();
+    getTransactionData();
     closeAllModal();
   };
 
@@ -90,34 +118,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+    getTransactionData();
   }, []);
-
-  const transactions: Transaction[] = [
-    {
-      id: 1,
-      type: "credit",
-      amount: 5000,
-      description: "Salary Deposit",
-      timestamp: "2024-02-20 09:30",
-      status: "success",
-    },
-    {
-      id: 2,
-      type: "debit",
-      amount: 1500,
-      description: "Electricity Bill",
-      timestamp: "2024-02-19 14:15",
-      status: "success",
-    },
-    {
-      id: 3,
-      type: "debit",
-      amount: 200,
-      description: "Wallet Transfer",
-      timestamp: "2024-02-18 18:45",
-      status: "pending",
-    },
-  ];
 
   const quickActions = [
     {
@@ -151,7 +153,6 @@ export default function Dashboard() {
   ];
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
-      {/* Modals remain unchanged */}
       <Modal
         isOpen={isSendMoneyModalOpen}
         onClose={() => setIsSendMoneyModalOpen(false)}
@@ -242,56 +243,63 @@ export default function Dashboard() {
             View All →
           </Link>
         </div>
+        {/* Transaction list */}
         <div className="bg-white rounded-xl md:rounded-2xl shadow-sm overflow-hidden">
-          {transactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="p-4 sm:p-6 border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-            >
-              <div className="flex items-center justify-between gap-2 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div
-                    className={`p-2 sm:p-3 rounded-full ${transaction.type === "credit" ? "bg-green-100" : "bg-red-100"}`}
-                  >
-                    {transaction.type === "credit" ? (
-                      <ArrowUpIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
-                    ) : (
-                      <ArrowDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
-                    )}
+          {transactionData &&
+            transactionData.map((transaction) => (
+              <div
+                key={transaction.transactionId}
+                className="p-4 sm:p-6 border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+              >
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div
+                      className={`p-2 sm:p-3 rounded-full ${transaction.type === "credit" ? "bg-green-100" : "bg-red-100"}`}
+                    >
+                      {transaction.activity === "received" ? (
+                        <ArrowDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+                      ) : (
+                        <ArrowUpIcon className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">
+                        {/* {transaction.description} */}
+                        {transaction.activity === "received"
+                          ? "Credited"
+                          : "Debited"}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
+                        <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="truncate">
+                          {new Date(transaction.date).toLocaleString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                            hour12: true,
+                            timeZone: "Asia/Kolkata",
+                          })}
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">
-                      {transaction.description}
+                  <div className="min-w-[100px] text-right">
+                    <p
+                      className={`text-sm sm:text-base font-semibold ${transaction.activity === "received" ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {transaction.activity === "received" ? "+" : "-"}₹
+                      {transaction.amount}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
-                      <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="truncate">{transaction.timestamp}</span>
-                    </p>
-                  </div>
-                </div>
-                <div className="min-w-[100px] text-right">
-                  <p
-                    className={`text-sm sm:text-base font-semibold ${transaction.type === "credit" ? "text-green-600" : "text-red-600"}`}
-                  >
-                    {transaction.type === "credit" ? "+" : "-"}₹
-                    {transaction.amount}
-                  </p>
-                  <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
-                    {transaction.status === "success" ? (
+                    <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
                       <CheckCircleIcon className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-                    ) : transaction.status === "pending" ? (
-                      <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
-                    ) : (
-                      <XCircleIcon className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
-                    )}
-                    <span className="capitalize truncate">
-                      {transaction.status}
-                    </span>
+                      <span className="capitalize truncate">Success</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
     </div>

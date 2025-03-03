@@ -36,7 +36,6 @@ export const sendMoney = async (
 
     const transactionResponse = await prismaClient.$transaction(
       async (tx: PrismaClient) => {
-        //Todo: need to remove receiverUser from the transaction as soon as will make user account number unique
         const receiverUser = await tx.user.findFirst({
           where: {
             AccountDetails: {
@@ -44,7 +43,6 @@ export const sendMoney = async (
             },
           },
         });
-
         if (!receiverUser) {
           next(createError(StatusCodes.NOT_FOUND, "receiver not found"));
           return;
@@ -62,7 +60,6 @@ export const sendMoney = async (
             },
           },
         });
-
         const receiverUserUpdate = await tx.user.update({
           where: {
             userId: receiverUser.userId,
@@ -76,18 +73,34 @@ export const sendMoney = async (
           },
         });
 
-        // create transaction history
-        // const transactionHistory = await tx.transactionHistory.create({
-        //   data: {
-        //     amount: transferAmount,
-        //     senderAccountId: senderUser.AccountDetails.accountNumber,
-        //   },
-        // });
+        const transactionHistory = await tx.transactionHistory.create({
+          data: {
+            amount,
+            senderAccount: {
+              connect: {
+                accountNumber:
+                  senderUser.AccountDetails?.accountNumber.toString(),
+              },
+            },
+            receiverAccount: {
+              connect: {
+                accountNumber: receiverAccountNumber.toString(),
+              },
+            },
+            User: {
+              connect: {
+                userId: userId,
+              },
+            },
+          },
+        });
 
-        return { senderUserUpdate, receiverUserUpdate };
+        return { senderUserUpdate, receiverUserUpdate, transactionHistory };
+      },
+      {
+        timeout: 10000,
       }
     );
-
     if (transactionResponse) {
       res.status(StatusCodes.OK).json({
         success: true,
@@ -111,6 +124,7 @@ export const isReceiverUserHaveAccount = async (
 ) => {
   try {
     const { receiverAccountNumber } = req.body;
+
     const response = await prismaClient.user.findFirst({
       where: {
         AccountDetails: {
@@ -134,6 +148,61 @@ export const isReceiverUserHaveAccount = async (
       next(
         createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
       )
+    );
+  }
+};
+
+export const getAllUserTransaction = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //@ts-ignore
+    const { accountNumber } = req.user;
+    const TransactionResponse = await prismaClient.transactionHistory.findMany({
+      where: {
+        OR: [
+          { receivingAccountNumber: accountNumber },
+          { senderAccountId: accountNumber },
+        ],
+      },
+      select: {
+        senderAccountId: true,
+        amount: true,
+        date: true,
+        transactionId: true,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    const modifiedTransaction = TransactionResponse.map((transaction) => {
+      if (transaction.senderAccountId === accountNumber) {
+        return {
+          ...transaction,
+          activity: "send",
+        };
+      }
+      return {
+        ...transaction,
+        activity: "received",
+      };
+    });
+    if (!modifiedTransaction) {
+      next(
+        createError(StatusCodes.INTERNAL_SERVER_ERROR, "something went wrong")
+      );
+    }
+    res.send({
+      success: true,
+      message: "transaction fetch successfully",
+      transaction: modifiedTransaction,
+    });
+  } catch (error) {
+    next(
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
     );
   }
 };

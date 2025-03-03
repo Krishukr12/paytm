@@ -1,6 +1,7 @@
 import { isReceiverUserHaveAccountRequestSchema } from "@repo/zod-schemas/transactionRequest";
 import { Router } from "express";
 import {
+  getAllUserTransaction,
   isReceiverUserHaveAccount,
   sendMoney,
 } from "../../controllers/v1/transactionController.js";
@@ -20,6 +21,8 @@ transactionRouter.post(
 
 transactionRouter.post(
   "/is-receiver-user-have-account",
-  validateDataWithZod(isReceiverUserHaveAccountRequestSchema),
+  // validateDataWithZod(isReceiverUserHaveAccountRequestSchema),
   isReceiverUserHaveAccount
 );
+
+transactionRouter.get("/transactions", isUserAuthorized, getAllUserTransaction);

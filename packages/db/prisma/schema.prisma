@@ -19,22 +19,28 @@ model User {
 }
 
 model AccountDetails {
-  accountNumber      String               @id
-  accountBalance     Int
-  userId             Int                  @unique
-  user               User                 @relation(fields: [userId], references: [userId])
-  TransactionHistory TransactionHistory[]
+  accountNumber        String               @id
+  accountBalance       Int
+  userId               Int                  @unique
+  user                 User                 @relation(fields: [userId], references: [userId])
+  sentTransactions     TransactionHistory[] @relation("senderAccount")
+  receivedTransactions TransactionHistory[] @relation("receiverAccount")
+  TransactionHistory   TransactionHistory[]
 }
 
 model TransactionHistory {
   transactionId          Int            @id @default(autoincrement())
   amount                 Int
-  receivingAccountNumber BigInt
+  receivingAccountNumber String
   date                   DateTime       @default(now())
   senderAccountId        String
-  senderAccount          AccountDetails @relation(fields: [senderAccountId], references: [accountNumber])
+  senderAccount          AccountDetails @relation("senderAccount", fields: [senderAccountId], references: [accountNumber])
+  receiverAccount        AccountDetails @relation("receiverAccount", fields: [receivingAccountNumber], references: [accountNumber])
   User                   User?          @relation(fields: [userUserId], references: [userId])
   userUserId             Int?
+
+  AccountDetails              AccountDetails? @relation(fields: [accountDetailsAccountNumber], references: [accountNumber])
+  accountDetailsAccountNumber String?
 }
 
 enum AccountStatus {

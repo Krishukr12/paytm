@@ -92,9 +92,6 @@ importers:
       next-auth:
         specifier: ^4.24.11
         version: 4.24.11(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      react:
-        specifier: ^19.0.0
-        version: 19.0.0
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
@@ -197,6 +194,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      axios:
+        specifier: ^1.7.9
+        version: 1.7.9
       zod:
         specifier: ^3.24.1
         version: 3.24.1
