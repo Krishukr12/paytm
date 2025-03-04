@@ -1,6 +1,6 @@
 # Paytm Clone
 
-A full-stack payment application built with TypeScript, Node.js, and React.
+A full-stack payment application built with TypeScript, Node.js, and Nextjs.
 
 ## 🚀 Features
 
@@ -20,10 +20,9 @@ A full-stack payment application built with TypeScript, Node.js, and React.
 - Zod (Schema Validation)
 
 ### Frontend
-- React
+- NextJs
 - TypeScript
 - Tailwind CSS
-- Vite
 
 ## 📋 Prerequisites
 
@@ -36,7 +35,7 @@ A full-stack payment application built with TypeScript, Node.js, and React.
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd paytm-clone
+cd paytm
 ```
 
 2. Install dependencies:
@@ -54,8 +53,8 @@ PORT=8000
 4. Set up the database:
 ```bash
 cd packages/db
+pnpm prisma migrate dev
 pnpm prisma generate
-pnpm prisma db push
 ```
 
 ## 🚀 Running the Application
@@ -74,6 +73,61 @@ pnpm dev
 
 The application will be available at:
 - Backend: http://localhost:8000
-- Frontend: http://localhost:5173
+- Frontend: http://localhost:3000
 
 ## 📁 Project Structure
+
+```
+
+## 🔧 Turborepo Configuration
+
+The project uses Turborepo for managing the monorepo workspace. Key configurations:
+
+- **Workspace Management**: Using pnpm workspaces
+- **Build Pipeline**: Configured in `turbo.json`
+- **Shared Dependencies**: Managed through the root `package.json`
+- **Development Scripts**: Unified commands for all packages
+
+## 🔒 Environment Variables
+
+### Backend (.env)
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/paytm_db"
+PORT=8000
+```
+
+## �� API Endpoints
+
+### Authentication
+- POST /api/v1/auth/register
+- POST /api/v1/auth/login
+
+### Transactions
+- POST /api/v1/transaction/send-money
+- GET /api/v1/transaction/history
+
+### Account
+- GET /api/v1/account/balance
+- GET /api/v1/account/details
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- Your Name - Initial work
+
+## 🙏 Acknowledgments
+
+- Hat tip to anyone whose code was used
+- Inspiration
+- etc.
