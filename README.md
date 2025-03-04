@@ -1,84 +1,79 @@
-# Turborepo starter
+# Paytm Clone
 
-This is an official starter Turborepo.
+A full-stack payment application built with TypeScript, Node.js, and React.
 
-## Using this example
+## 🚀 Features
 
-Run the following command:
+- User Authentication
+- Account Management
+- Money Transfer
+- Transaction History
+- Real-time Balance Updates
 
-```sh
-npx create-turbo@latest
+## 🛠️ Tech Stack
+
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+- Prisma (PostgreSQL)
+- Zod (Schema Validation)
+
+### Frontend
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
+
+## 📋 Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL
+- pnpm (recommended) or npm
+
+## 🔧 Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd paytm-clone
 ```
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+2. Install dependencies:
+```bash
+pnpm install
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
+3. Set up environment variables:
+```bash
+# Create .env file in apps/http_server
+DATABASE_URL="postgresql://username:password@localhost:5432/paytm_db"
+PORT=8000
 ```
-cd my-turborepo
+
+4. Set up the database:
+```bash
+cd packages/db
+pnpm prisma generate
+pnpm prisma db push
+```
+
+## 🚀 Running the Application
+
+### Backend
+```bash
+cd apps/http_server
 pnpm dev
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+### Frontend
+```bash
+cd apps/web
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+The application will be available at:
+- Backend: http://localhost:8000
+- Frontend: http://localhost:5173
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## 📁 Project Structure
