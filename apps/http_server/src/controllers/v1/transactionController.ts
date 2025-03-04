@@ -8,7 +8,7 @@ import { prismaClient } from "@repo/db/client";
 export const sendMoney = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { amount, receiverAccountNumber } = req.body;
@@ -99,7 +99,7 @@ export const sendMoney = async (
       },
       {
         timeout: 10000,
-      }
+      },
     );
     if (transactionResponse) {
       res.status(StatusCodes.OK).json({
@@ -112,7 +112,7 @@ export const sendMoney = async (
     }
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };
@@ -120,7 +120,7 @@ export const sendMoney = async (
 export const isReceiverUserHaveAccount = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { receiverAccountNumber } = req.body;
@@ -146,8 +146,8 @@ export const isReceiverUserHaveAccount = async (
   } catch (error) {
     next(
       next(
-        createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
-      )
+        createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
+      ),
     );
   }
 };
@@ -155,7 +155,7 @@ export const isReceiverUserHaveAccount = async (
 export const getAllUserTransaction = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     //@ts-ignore
@@ -192,7 +192,7 @@ export const getAllUserTransaction = async (
     });
     if (!modifiedTransaction) {
       next(
-        createError(StatusCodes.INTERNAL_SERVER_ERROR, "something went wrong")
+        createError(StatusCodes.INTERNAL_SERVER_ERROR, "something went wrong"),
       );
     }
     res.send({
@@ -202,7 +202,7 @@ export const getAllUserTransaction = async (
     });
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };

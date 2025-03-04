@@ -7,7 +7,7 @@ import { prismaClient } from "@repo/db/client";
 export const isReceiverUserExistAndActive = async (
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { receiverAccountNumber } = req.body;
@@ -40,8 +40,8 @@ export const isReceiverUserExistAndActive = async (
       next(
         createError(
           StatusCodes.BAD_REQUEST,
-          "You cannot transfer money to your own account"
-        )
+          "You cannot transfer money to your own account",
+        ),
       );
       return;
     }
@@ -53,14 +53,14 @@ export const isReceiverUserExistAndActive = async (
       next(
         createError(
           StatusCodes.NOT_FOUND,
-          "The recipient's bank details are incorrect or do not exist"
-        )
+          "The recipient's bank details are incorrect or do not exist",
+        ),
       );
       return;
     }
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };

@@ -23,7 +23,7 @@ const handler = NextAuth({
             {
               email: credentials.email,
               password: credentials.password,
-            }
+            },
           );
           if (response.data.success) {
             return {

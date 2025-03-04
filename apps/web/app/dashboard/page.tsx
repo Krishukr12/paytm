@@ -67,7 +67,7 @@ interface Transaction {
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState<User | null>(null);
   const [transactionData, setTransactionData] = useState<Transaction[] | null>(
-    null
+    null,
   );
 
   console.log(transactionData);

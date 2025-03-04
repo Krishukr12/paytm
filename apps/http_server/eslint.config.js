@@ -13,9 +13,9 @@ export default [
         sourceType: "module",
       },
     },
-    plugins: {
-      "@typescript-eslint": typescript,
-    },
+    // plugins: {
+    //   "@typescript-eslint": typescript,
+    // },
     rules: {
       ...typescript.configs.recommended.rules,
     },

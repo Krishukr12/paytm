@@ -7,7 +7,7 @@ import { createError } from "../utils/createError.js";
 export const isUserAuthorized = async (
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const authToken = req.headers["authorization"];
@@ -28,8 +28,8 @@ export const isUserAuthorized = async (
     next(
       createError(
         StatusCodes.INTERNAL_SERVER_ERROR,
-        "Invalid authorization token"
-      )
+        "Invalid authorization token",
+      ),
     );
   }
 };

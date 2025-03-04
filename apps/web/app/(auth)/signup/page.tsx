@@ -43,7 +43,7 @@ const SignUpForm = () => {
       toast.info("Creating account...");
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/user/signup`,
-        data
+        data,
       );
       toast.success(response.data.message);
       router.push("/signin");

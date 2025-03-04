@@ -16,13 +16,13 @@ transactionRouter.post(
   validateDataWithZod(isReceiverUserHaveAccountRequestSchema),
   isUserAuthorized,
   isReceiverUserExistAndActive,
-  sendMoney
+  sendMoney,
 );
 
 transactionRouter.post(
   "/is-receiver-user-have-account",
   // validateDataWithZod(isReceiverUserHaveAccountRequestSchema),
-  isReceiverUserHaveAccount
+  isReceiverUserHaveAccount,
 );
 
 transactionRouter.get("/transactions", isUserAuthorized, getAllUserTransaction);

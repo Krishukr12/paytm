@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -6,12 +8,13 @@ import { StatusCodes } from "http-status-codes";
 import { createError } from "../../utils/createError.js";
 import { prismaClient } from "@repo/db/client";
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "kjsdfkjsdfkjsdfkjsdfkjsdf";
+const JWT_SECRET =
+  process.env.JWT_SECRET ?? "krishukrishan1211@Krishukrishan1211@";
 
 export const userSignUp = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { email, phoneNumber, password, name } = req.body;
@@ -56,7 +59,7 @@ export const userSignUp = async (
     });
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };
@@ -64,7 +67,7 @@ export const userSignUp = async (
 export const userSignIn = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { email, password } = req.body;
 
@@ -92,7 +95,7 @@ export const userSignIn = async (
         accountNumber: user.phoneNumber,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
     res.status(StatusCodes.OK).json({
       success: true,
@@ -101,7 +104,7 @@ export const userSignIn = async (
     });
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };
@@ -109,7 +112,7 @@ export const userSignIn = async (
 export const getUserDashboardData = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     //@ts-ignore
@@ -134,7 +137,7 @@ export const getUserDashboardData = async (
     });
   } catch (error) {
     next(
-      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error")
+      createError(StatusCodes.INTERNAL_SERVER_ERROR, "internal server error"),
     );
   }
 };
