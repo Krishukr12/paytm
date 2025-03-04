@@ -23,7 +23,7 @@ const handler = NextAuth({
             {
               email: credentials.email,
               password: credentials.password,
-            },
+            }
           );
           if (response.data.success) {
             return {
@@ -56,7 +56,7 @@ const handler = NextAuth({
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        session.user.accessToken = token.accessToken;
+        session.user.accessToken = token.accessToken as string;
       }
       return session;
     },
