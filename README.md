@@ -122,9 +122,3 @@ PORT=8000
 ## 👥 Authors
 
 - Krishan Kumar Safi 
-
-## 🙏 Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc.
